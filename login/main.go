@@ -137,7 +137,7 @@ func Login(c *gin.Context) {
 
 		count = 1
 	}
-
+	defer db.Close()
 	if count == 1 {
 		token := createTokenString(b.ID, b.Password)
 		isTrue := Validation(token)
