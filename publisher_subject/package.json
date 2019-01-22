@@ -1,0 +1,25 @@
+{
+  "name": "subject_publisher",
+  "version": "1.0.0",
+  "description": "subject publisher",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/adminApi"
+  },
+  "author": "\"ravi\"",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "http": "0.0.0",
+    "jsonwebtoken": "^8.4.0",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
