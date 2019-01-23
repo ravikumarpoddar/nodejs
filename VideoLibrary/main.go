@@ -74,7 +74,6 @@ func routerLibrary() *gin.Engine {
 	r.POST("/createsub", CreateSubject)
 	r.POST("/createcat", CreateCategory)
 	r.POST("/addvideomod", AddVideoModule)
-	//	r.POST("/addvideocat", AddVideoInCat)
 
 	return r
 
@@ -176,7 +175,7 @@ func AddVideoModule(c *gin.Context) {
 		log.Fatal(err)
 	}
 	fmt.Println(b)
-	res, err := stmt2.Exec(b.ModID, b.Name, b.URL, b.Thumbnail, b.About, b.Duration, time.Now(), ID)
+	res, err := stmt2.Exec(b.ModID, b.Name, 11, b.Thumbnail, b.About, b.Duration, time.Now(), ID)
 	lid, err := res.LastInsertId()
 	b.ID = int(lid)
 	if err != nil {
@@ -199,46 +198,46 @@ func AddVideoModule(c *gin.Context) {
 
 }
 
-func AddVideoInCat(c *gin.Context) {
+// func AddVideoInCat(c *gin.Context) {
 
-	db := D.DB()
+// 	db := D.DB()
 
-	var (
-		count = 0
-		b     M.AddVideoModRepo
-		bs    []M.AddVideoModRepo
-	)
+// 	var (
+// 		count = 0
+// 		b     M.AddVideoModRepo
+// 		bs    []M.AddVideoModRepo
+// 	)
 
-	c.BindJSON(&b)
-	ID := Validation(c)
-	stmt2, err := db.Prepare("insert into video_repo(mod_id, name,thumbnail,about,duration, added_date, addedBy) value(?,?,?,?,?,?,?)")
-	if err != nil {
-		fmt.Println(err)
-	}
+// 	c.BindJSON(&b)
+// 	ID := Validation(c)
+// 	stmt2, err := db.Prepare("insert into video_repo(mod_id, name,thumbnail,about,duration, added_date, addedBy) value(?,?,?,?,?,?,?)")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	res, err := stmt2.Exec(b.ModID, b.Name, b.Thumbnail, b.About, b.Duration, time.Now(), ID)
+// 	res, err := stmt2.Exec(b.ModID, b.Name, b.Thumbnail, b.About, b.Duration, time.Now(), ID)
 
-	lid, err := res.LastInsertId()
-	b.ID = int(lid)
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		bs = append(bs, b)
-		count = 1
-	}
-	defer db.Close()
+// 	lid, err := res.LastInsertId()
+// 	b.ID = int(lid)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	} else {
+// 		bs = append(bs, b)
+// 		count = 1
+// 	}
+// 	defer db.Close()
 
-	if count == 1 {
-		c.JSON(http.StatusOK, gin.H{
-			"Subject": bs,
-		})
-	} else {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Subject": "Not Added",
-		})
-	}
+// 	if count == 1 {
+// 		c.JSON(http.StatusOK, gin.H{
+// 			"Subject": bs,
+// 		})
+// 	} else {
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"Subject": "Not Added",
+// 		})
+// 	}
 
-}
+// }
 
 func Validation(c *gin.Context) int {
 
