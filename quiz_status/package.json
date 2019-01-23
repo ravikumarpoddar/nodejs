@@ -1,0 +1,20 @@
+{
+  "name": "quiz_status",
+  "version": "1.0.0",
+  "description": "\"Status of quiz: total no. of quiz, types (home or class), no. of quiz completed taken by particular faculty with name\"",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/adminApi"
+  },
+  "author": "\"ravi\"",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mysql": "^2.16.0"
+  }
+}

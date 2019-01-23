@@ -1,6 +1,8 @@
 const express= require('express');
 const app = express();
+
 const bodyparser = require('body-parser');
+
 const subjectPublishedRouter= require('./publish_api/routes/subject_isPublished');
 const modulePublishedRouter= require('./publish_api/routes/module_isPublished');
 
@@ -10,6 +12,7 @@ app.use(bodyparser.json());
 
 app.use('/subjectPublished',subjectPublishedRouter);
 app.use('/modulePublished',modulePublishedRouter);
+
 app.use ((req,res,next)=>{
     const error = new Error('not found');
     Error.status = 404;
