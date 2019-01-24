@@ -1,14 +1,15 @@
 const express= require('express');
 const app = express();
-
+const logger = require('morgan');
 const bodyparser = require('body-parser');
+
 
 const subjectPublishedRouter= require('./publish_api/routes/subject_isPublished');
 const modulePublishedRouter= require('./publish_api/routes/module_isPublished');
 
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
-
+app.use(logger('dev'));
 
 app.use('/subjectPublished',subjectPublishedRouter);
 app.use('/modulePublished',modulePublishedRouter);
