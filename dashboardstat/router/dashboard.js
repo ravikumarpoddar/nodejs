@@ -23,4 +23,8 @@ r.get('/statvideo', (req, res, next)=>{
     dashController.getAllVideo(req, res);
 });
 
+r.get('/statstudent', (req, res, next)=>{
+    dashController.getAllStudents(req, res);
+});
+
 module.exports = r;
