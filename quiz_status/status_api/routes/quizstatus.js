@@ -7,6 +7,7 @@ const statusController= require('../controller/quizstatus');
  */
 
  router.get('/',statusController.quiz_status); 
+ 
 
 
 module.exports=router;

@@ -1,17 +1,16 @@
-const express=require('express');
+const express = require('express');
 const data = require('../model/Dbpool');
 
-
-exports.module_isPublished=(req,res,next)=>{
-    const sub_id=req.body.sub_id;
+exports.subject_isPublished=(req,res,next)=>{
     const id= req.body._id;
-    const sql=`update Module set isPublished = !isPublished where id = ${id} && sub_id=${sub_id}`;
+    const sql=`update subject_repo set isPublished = !isPublished where id = ${id}`;
     data.query(sql,(err,result)=>{
-        if(err)
+        if(err){
+    
         res.status(404).json({
             "err":err
         }).end();
-
+    }
         res.status(200).json({
             status:"OK"
         }).end();
