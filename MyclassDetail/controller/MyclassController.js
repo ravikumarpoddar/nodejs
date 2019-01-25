@@ -1,9 +1,23 @@
 const conn = require('../dbpool/db');
 
-function getVideoDetailByID(id){
-  
-}
+function getVideoDetailByFacultyID(id, callback){
+   
+    conn.query('SELECT * from video_encoded where id=?',[id], function (err, results, fields) {
 
+        if (err) {
+            
+            callback(err, null)
+        
+        }else{
+            var resultsJson = JSON.stringify(results);            
+            resultsJson = JSON.parse(resultsJson);
+            callback(null,resultsJson);
+        }
+            
+    });
+
+   
+}
 
 module.exports = ClassDetailByID = {
     
@@ -48,54 +62,46 @@ module.exports = ClassDetailByID = {
             }
             
             var resultJson = JSON.stringify(results);
+            
             resultJson.count = resultJson;
 
             resultJson = JSON.parse(resultJson);
             
-          
-
-            for(let i=0;i<resultJson.length;i++){
-              
-              
-
-                conn.query('SELECT * from video_encoded where id=?',[resultJson[i].video_link], function (error, results, fields) {
-        
-                    if (error) {
-                        
-                        var apiResult = {};
-                    
-                        apiResult.data = [];
             
-                        apiResult;
-                 
-                    }
-                    
-                    var resultsJson = JSON.stringify(results);            
-                    resultsJson = JSON.parse(resultsJson);
 
-                    console.log(resultsJson[0]);
+            
+            for(let i = 0;i<resultJson.length;i++){
+             resultJson[i]["vidDetail"] = [];
+             getVideoDetailByFacultyID(resultJson[i].video_link,(err, data)=>{
+
+                if(err){
+                    console.log(err);
+                }else{
+                    resultJson[i].vidDetail = data;
+                }
+                
+                if(resultJson.length - 1 == i){
+
+                    var apiResult = {};
+
+                    apiResult.data = resultJson;
+                    apiResult.totalVideo = resultJson.length;
                     
-                    videoResult[i] = resultsJson[0];
-                    
-                    
-                });
+                  
+                    res.json(apiResult);
+
+                }
+                
+             });
+
+               
 
             }
-
-            console.log(videoResult.length);
-            for(let i=0; i<videoResult.length ;i++){
-                console.log(videoResult[i]);
-            }
-            
-            var apiResult = {};
-
-            apiResult.data = resultJson;
-            apiResult.totalVideo = resultJson.length;
-            
-          
-            res.json(apiResult);
+           
         });
     },
+
+   
 
 
 
