@@ -9,7 +9,6 @@ app.use(bodyparser.json());
 app.use(logger('dev'));
 const statusRoutes= require('./status_api/routes/quizstatus');
 app.use('/quizstat',statusRoutes);
-
 app.use((req,res,next)=>{
     const error = new Error('Not Found');
     Error.status=404;

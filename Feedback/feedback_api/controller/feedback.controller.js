@@ -7,10 +7,10 @@ exports.feedback=(req,res,next)=>{
         if(err){
             res.status(404).json({
                err:err 
-            });
+            }).end();
         }
         res.status(200).json({
             feedback:feedback
-        });
+        }).end();
     });
 };
