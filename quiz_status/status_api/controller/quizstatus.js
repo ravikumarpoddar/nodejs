@@ -1,9 +1,9 @@
 const express = require('express');
 const data = require('../model/Dbpool.js');
 
-function AssginedBoard(id, aid, callback){
+function AssginedBoard(link, login_id, callback){
     var sql = "SELECT  section, stream, semester, created_time from student_board where quiz=? && assigne=?";
-    data.query(sql,[id, aid],(err,result)=>{
+    data.query(sql,[link, login_id],(err,result)=>{
         if(err){
             callback(err, null);
         }else{
@@ -30,11 +30,47 @@ exports.quiz_status=(req,res,next)=>{
         else{
             var resultjson = JSON.stringify(result);
             resultjson = JSON.parse(resultjson);
-            console.log(resultjson)
+            //console.log(resultjson)
             for (let i = 0; i < resultjson.length; i++) {
                 resultjson[i]["assign"]=[];
 
                 AssginedBoard(resultjson[i].link,resultjson[i].id, (err, data)=>{
+                    if(err){
+                        console.log(err);
+                    }else{
+                        resultjson[i].assign = data
+                    }
+
+                    if(resultjson.length - 1 == i){
+                        res.status(200).json({
+                            "result":resultjson
+                        }).end();
+                    }
+                });
+                
+            }
+            
+        }
+    });
+}
+
+exports.quiz_statusById=(req,res,next)=>{
+    const login_id = req.params.login_id;
+    const sql=`SELECT login_id,link, type, name, valid_time, completed from Quiz where login_id = ?`;
+    data.query(sql,[login_id],(err,result)=>{
+        if(err){
+            res.status(404).json({
+             "error":err
+            }).end();
+        }
+        else{
+            var resultjson = JSON.stringify(result);
+            resultjson = JSON.parse(resultjson);
+            //console.log(resultjson);
+            for (let i = 0; i < resultjson.length; i++) {
+                resultjson[i]["assign"]=[];
+
+                AssginedBoard(resultjson[i].link,resultjson[i].login_id, (err, data)=>{
                     if(err){
                         console.log(err);
                     }else{

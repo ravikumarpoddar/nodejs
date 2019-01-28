@@ -2,7 +2,8 @@ const express = require('express');
 const data = require('../model/Dbpool.js');
 
 function AssginedBoard(id, aid, callback){
-    var sql = "SELECT  section, stream, semester, created_time from student_board where quiz=? && assigne=?";
+    var sql = `SELECT  section, stream, semester, DATE_FORMAT(created_time, "%M %d %Y")
+     from student_board where quiz=? && assigne=?`;
     data.query(sql,[id, aid],(err,result)=>{
         if(err){
             callback(err, null);
@@ -18,7 +19,6 @@ function QuizLink(id,callback) {
             callback(err, null);
         }else{
             callback(null, result);
-            console.log(result);
         }
     });
 }
