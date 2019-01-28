@@ -3,9 +3,21 @@ let Vimeo = require('vimeo').Vimeo;
 let multer  =   require('multer');
 var crypto = require('crypto');
 var fs = require('fs');
+var aws = require('aws-sdk');
+var multerS3 = require('multer-s3');
 var conn = require('../dbpool/db');
 
+
+aws.config.update({
+  secretAccessKey: 'i+VByVKqHbsp7SsuCmTz3/pxqVFvLJIeBJsPy8Bi',
+  accessKeyId: 'AKIAJJXWTQOJEUHBZJ4A',
+  region: 'ap-south-1'
+});
+
 let r = express.Router();
+var s3 = new aws.S3();
+
+
 
 function RandNum(minimum, maximum){
   var distance = maximum-minimum;
@@ -33,15 +45,21 @@ function RandNum(minimum, maximum){
 	}
 }
 var val = RandNum(9, 999999);
-var storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/')
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-'+ val +'.mp4')
-  }
+var filenames = 'file'+val+'.mp4';
+
+
+var upload = multer({
+  storage: multerS3({
+      s3: s3,
+      bucket: 'documentsvr',
+      key: function (req, file, cb) {
+          
+          file.fieldname = filenames;
+          console.log(file);
+          cb(null, file.fieldname); //use Date.now() for unique file keys
+      }
+  })
 });
-var upload = multer({storage: storage});
 
 let client = new Vimeo("user88972061", "ymKSw6Iv+/uv+kCYMUTOK+2HyblpA5PY+Iz5iqGcwlpCfUj1A7JUX57tkBsZ7ou4TL8p5o/U4+9jpmLLJKQfZWx+68iPYzqCht3juHXAgtNky9w/ttoiEIWoz3xB7T/0", "1e686a258b2fdc5f4c1ba9a4798778ec");
 
@@ -54,7 +72,9 @@ var uid = req.params.mid;
 var vid = req.params.vid
 
 
-let file_name='/home/vrook/adminApi/vimeoApi/public/file-'+val+'.mp4'
+
+let file_name='https://s3.us-east-2.amazonaws.com/documentsvr/'+filenames;
+
 
 client.request({
   method: 'GET',
