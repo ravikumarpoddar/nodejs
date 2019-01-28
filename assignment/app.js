@@ -5,14 +5,20 @@ const bodyparser = require('body-parser');
 
 
 const writtenRouter=require('./assig_api/routes/written_Assignment');
-app.use('/writtenAssign',writtenRouter);
+app.use('/writtenassign',writtenRouter);
 
 const uploadRouter=require('./assig_api/routes/upload_Assignment');
-app.use('/uploadAssign',uploadRouter);
+app.use('/uploadassign',uploadRouter);
 
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
 app.use(logger('dev'));
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 //eror handling
 app.use((req,res,next)=>{
     const error = new Error('Not found');
