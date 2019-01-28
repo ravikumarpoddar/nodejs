@@ -19,6 +19,8 @@ function GetStudName(id){
 module.exports =  Dashboard = {
 
     getAllCollege: (req, res)=>{
+        var premium = [];
+        var trail = [];
          conn.query('SELECT * from College_profile', function (error, results, fields) {
             
             if (error) {
@@ -37,11 +39,29 @@ module.exports =  Dashboard = {
             resultJson = JSON.parse(resultJson);
             var apiResult = {};
 
-            apiResult.data = resultJson;
-            apiResult.totalColleges = resultJson.length;
-            
+            for (let i = 0; i < resultJson.length; i++) {
+               
+                if(resultJson[i].isPremieum){
+                    premium.push(resultJson[i]);
+                }else{
+                    trail.push(resultJson[i]);
+                }
+
+                if(resultJson.length - 1 == i){
+                    apiResult.premium = premium;
+                    apiResult.trail = trail;
+                    apiResult.totalColleges = resultJson.length;
+                    
+                    console.log(apiResult);
           
-            res.json(apiResult);
+                    res.json(apiResult);
+                    
+                }
+                
+            }
+           
+            
+           
         });
     },
 

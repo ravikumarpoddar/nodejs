@@ -14,4 +14,9 @@ r.get('/faculty/:id', (req, res, next)=>{
     EntityController.getFacultyByID(req, res, fid);
 });
 
+r.get('/facultybycollge/:id', (req, res, next)=>{
+    var fid = req.params.id;
+    EntityController.getFacultyBycolg(req, res, fid);
+});
+
 module.exports = r;
