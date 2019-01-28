@@ -8,6 +8,6 @@ const statusController= require('../controller/quizstatus');
 
  router.get('/allquiz',statusController.quiz_status); 
  
-  router.get('/:login_id',statusController.quiz_statusById);
+  router.get('/:id',statusController.quiz_statusById);
 
 module.exports=router;
