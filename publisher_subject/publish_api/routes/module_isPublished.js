@@ -5,6 +5,10 @@ const controller = require('../controller/moduleisPublished');
 /** 
  * POST method to check whether a particular module is published or not by isPublished column of Module Table
 */
- router.post('/module', controller.module_isPublished);
+router.post('/module', controller.module_isPublished);
+
+router.post('/isfree', controller.module_isFree);
+
+router.post('/remfree', controller.module_removeFree);
 
 module.exports = router;
