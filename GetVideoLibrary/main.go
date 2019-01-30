@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/rsa"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -11,9 +13,66 @@ import (
 	D "./dbPool"
 	M "./model"
 	"github.com/apex/gateway"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
+
+var err error
+
+type LoginClaims struct {
+	ID       int    `json:"id"`
+	Password string `json:"password"`
+
+	jwt.StandardClaims
+}
+
+type UserClaims struct {
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+
+	jwt.StandardClaims
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+const (
+	privKeyPath = "key/app.rsa"     // openssl genrsa -out app.rsa keysize
+	pubKeyPath  = "key/app.rsa.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
+)
+
+var (
+	verifyKey *rsa.PublicKey
+	signKey   *rsa.PrivateKey
+)
+
+func init() {
+	signBytes, err := ioutil.ReadFile(privKeyPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+}
 
 func routerGetLib() *gin.Engine {
 	gin.SetMode(gin.DebugMode)
@@ -88,7 +147,9 @@ func GetModule(c *gin.Context) {
 		b     M.GetMod
 		bs    []M.GetMod
 	)
+
 	c.BindJSON(&b)
+
 	stmt, err := db.Prepare("select id, name, thumbnail, about, createdBy, created_date, isPublished, Duration from Module where sub_id=?")
 	if err != nil {
 		fmt.Println(err)
@@ -213,6 +274,104 @@ func GetName(id string) string {
 		return email
 	}
 	return "None"
+}
+
+func CheckTrail(id int) bool {
+	db := D.DB()
+
+	var (
+		cid   int
+		count = 0
+		isP   bool
+	)
+	stmt, err := db.Prepare("select colg_ID from User_profile where id = ?")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	rows, err := stmt.Query(id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(rows)
+	for rows.Next() {
+		err := rows.Scan(&cid)
+
+		if err != nil {
+
+			log.Fatal(err)
+
+		}
+
+		count = 1
+	}
+	defer db.Close()
+
+	if count == 1 {
+
+		stmt, err := db.Prepare("select isPremieum from College_profile where id = ?")
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rows, err := stmt.Query(cid)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(rows)
+		for rows.Next() {
+			err := rows.Scan(&isP)
+
+			if err != nil {
+
+				log.Fatal(err)
+
+			}
+
+		}
+		defer db.Close()
+
+	}
+
+	if isP {
+		return true
+	}
+
+	return false
+
+}
+
+func Validation(c *gin.Context) int {
+
+	var user UserClaims
+
+	reqToken := c.Request.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer")
+	reqToken = strings.TrimSpace(splitToken[1])
+
+	token, err := jwt.Parse(reqToken, func(token *jwt.Token) (interface{}, error) {
+		return verifyKey, nil
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	token, err = jwt.ParseWithClaims(reqToken, &user, func(token *jwt.Token) (interface{}, error) {
+		return verifyKey, nil
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if token.Valid == true {
+
+		return user.ID
+
+	}
+
+	return 0
+
 }
 
 func main() {

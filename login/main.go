@@ -81,10 +81,9 @@ func createTokenString(id int, password string) string {
 	jti := s + "vrookb2btransforminglearning"
 
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("RS512"), jwt.MapClaims{
-		"id":       id,
-		"password": password,
-		"iat":      iat,
-		"jti":      jti,
+		"id":  id,
+		"iat": iat,
+		"jti": jti,
 	})
 
 	tokenstring, err := token.SignedString(signKey)

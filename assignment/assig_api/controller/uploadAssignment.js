@@ -1,4 +1,3 @@
-const express = require('express');
 const data = require('../model/Dbpool.js');
 
 function AssginedBoard(id, aid, callback){
@@ -42,11 +41,14 @@ exports.upload_Assignment = (req,res,next) => {
             resultjson = JSON.parse(resultjson);
             //console.log(resultjson)
             for (let i = 0; i < resultjson.length; i++) {
+
                 resultjson[i]["assign"]=[];
-                const link=QuizLink(resultjson[i].Faculty_id,(err,data)=>{
+
+                const link= QuizLink(resultjson[i].Faculty_id,(err,data)=>{
                     if(err) throw err;
                     else return data;
                 });
+
                 AssginedBoard(link,resultjson[i].Faculty_id, (err, data)=>{
                     if(err){
                         console.log(err);
