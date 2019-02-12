@@ -6,18 +6,21 @@ function AssginedBoard(id, aid, callback){
         if(err){
             callback(err, null);
         }else{
-            callback(null, result);
+            var resultjson= JSON.parse(JSON.stringify(result));
+            callback(null, resultjson);
         }
     });
 }
 function QuizLink(id,callback) {
-    var sql ="select link from Quiz where id = ?";
+    var sql ="select link from Quiz where id = ?";  
     data.query(sql,[id],(err,result)=>{
         if(err){
             callback(err, null);
         }else{
-            callback(null, result);
-        }
+            var resJson=JSON.parse(JSON.stringify(result));
+            console.log(resJson );
+            callback(null, resJson);
+        }   
     });
 }
 exports.upload_Assignment = (req,res,next) => {
@@ -85,27 +88,48 @@ exports.upload_AssignmentByID = (req,res,next) => {
         else{
             var resultjson = JSON.stringify(result);
             resultjson = JSON.parse(resultjson);
-            //console.log(resultjson)
-            for (let i = 0; i < resultjson.length; i++) {
-                resultjson[i]["assign"]=[];
-                const link=QuizLink(resultjson[i].Faculty_id,(err,data)=>{
-                    if(err) throw err;
-                    else return data;
-                });
-                AssginedBoard(link,resultjson[i].Faculty_id, (err, data)=>{
-                    if(err){
-                        console.log(err);
-                    }else{
-                        resultjson[i].assign = data
-                    }
+            console.log(resultjson.length);
+            resultjson[0]["assign"]=[];
+            const link=QuizLink(resultjson[0].Faculty_id,(err,data)=>{
+                        if(err) throw err;
+                        else {
+                        console.log("data"+data);
+                        return data;
+            }
+                    });
+                    AssginedBoard(link,resultjson[0].Faculty_id, (err, data)=>{
+                                if(err){
+                                    console.log(err);
+                                }else{
+                                    resultjson[0].assign = data
+                                }
+            
+                            res.json(resultjson).end;
+                                    // res.status(200).json({
+                                    //     "result":resultjson
+                                    // }).end();
+                                
+                            });
+            // for (let i = 0; i < resultjson.length; i++) {
+            //     resultjson[i]["assign"]=[];
+            //     const link=QuizLink(resultjson[i].Faculty_id,(err,data)=>{
+            //         if(err) throw err;
+            //         else return data;
+            //     });
+            //     AssginedBoard(link,resultjson[i].Faculty_id, (err, data)=>{
+            //         if(err){
+            //             console.log(err);
+            //         }else{
+            //             resultjson[i].assign = data
+            //         }
 
-                    if(resultjson.length - 1 == i){
-                        res.status(200).json({
-                            "result":resultjson
-                        }).end();
-                    }
-                });
-            } 
+            //         if(resultjson.length - 1 == i){
+            //             res.status(200).json({
+            //                 "result":resultjson
+            //             }).end();
+            //         }
+            //     });
+            // } 
            
             }
         });

@@ -35,7 +35,7 @@ module.exports = ClassDetailByID = {
             }
             
             var resultJson = JSON.stringify(results);
-            resultJson.count = resultJson;
+            // resultJson.count = resultJson;
 
             resultJson = JSON.parse(resultJson);
             var apiResult = {};
