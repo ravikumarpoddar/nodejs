@@ -10,7 +10,7 @@ function facultyId(id,cb){
         }
         else{
             facultyIdJson=JSON.parse(JSON.stringify(Id));
-            console.log(facultyIdJson);
+            //console.log(facultyIdJson);
             cb(null,facultyIdJson);
             
         }
@@ -22,16 +22,17 @@ function quizDetailsByID(id, cb){
     var sql = `SELECT COUNT(IF(type='Home',1,null)) 'Home',
     COUNT(IF(type='Class',1,null)) 'Class',
     COUNT(IF(login_id,1,null)) 'TotalQuiz'
-    FROM Quiz Where login_ID= ?`;
+    FROM Quiz Where login_ID= (select login_id from Quiz where login_id=${id})`;
     conn.query(sql,[id],(err,quiz)=>{
         if(err){
             cb(err,null);
         }
         else{
             quizJson=JSON.parse(JSON.stringify(quiz));
+            
             cb(null,quizJson);
-            console.log(`QUIZ id:${id}`);
-            console.log(quizJson[0]);
+            //console.log(`QUIZ id:${id}`);
+           // console.log(quizJson[0]);
         }
     });
 }
@@ -46,8 +47,8 @@ function assignmentByID(id,cb){
        if(err) cb(err,null);
        else {
            assignmentJson=JSON.parse(JSON.stringify(assignment));
-           console.log(`assign id:${id}`);
-           console.log(assignmentJson);
+          // console.log(`assign id:${id}`);
+          // console.log(assignmentJson);
            cb(null, assignmentJson);
        }
     });
@@ -62,8 +63,8 @@ function classByID(id,cb){
        if(err) cb(err,null);
        else {
            classdetailJson=JSON.parse(JSON.stringify(classdetail));
-           console.log(`class id:${id}`);
-           console.log(classdetailJson);
+          // console.log(`class id:${id}`);
+           //console.log(classdetailJson);
            cb(null, classdetailJson);
        }
     });
@@ -80,52 +81,67 @@ router.get('/:id', (req,res)=>{
      }
      else{
          resultJson=JSON.parse(JSON.stringify(colg));
-        //  var apiResult = {};
-        resultJson.report = resultJson[0];
+         var apiResult = [];
+        apiResult.report = resultJson[0];
          facultyId(id,(err,facId)=>{
              if(err) console.log(err);
              else{
 
                  for(let i=0;i<facId.length;i++){
-                    // resultJson.report[i].totalFaculty = facId.length;
+                     //apiResult.report[i].totalFaculty = facId.length;
                    
-                     console.log(facId[i].id);
-                 
+                    console.log(facId[i].id);
+                 facId[i]["Quiz"]=[];
                 quizDetailsByID(facId[i].id,(err, quizdetail)=>{
                 if(err){
                      console.log(err);
                  }
                  else{
-                   resultJson.report[i]["Quiz"]=quizdetail;
+                    // console.log(quizdetail);
+                     facId[i].Quiz=quizdetail;
+                    // console.log(facId[i]);
+                     apiResult.push(facId[i]);
+
+                     
+                     if(facId.length -1 == i){
+                  
+                
+                        res.json(apiResult);
+                    }
                  }
                  });
-                 assignmentByID(facId[i].id,(err,assign)=>{
-                     if(err){
-                         console.log(err);
-                     }
-                     else{
-                      resultJson.report[i][Assignment]=assign;
-                     }
-                 });
-                 classByID(facId[i].id,(err,classdet)=>{
-                    if(err){
-                        console.log(err);
-                    }
-                    else{
-                   resultJson.report[i][Myclass]=classdet;
-                    }
-                });
+                //  facId[i]["Assignment"]=[];
+                //  assignmentByID(facId[i].id,(err,assign)=>{
+                //      if(err){
+                //          console.log(err);
+                //      }
+                //      else{
+                //          facId[i].Assignment=assign;
+                //       //apiResult.report[i]["Assignment"]=assign;
+                //     console.log(facId[i].Assignment); 
+                //     }
+                //  });
+                //  facId[i]["classDetail"]=[];
+                //  classByID(facId[i].id,(err,classdet)=>{
+                //     if(err){
+                //         console.log(err);
+                //     }
+                //     else{
+                //         //console.log(classdet);
+                //         facId[i].classDetail=classdet;
+                //         console.log(facId[i].classDetail);
+                //    //apiResult.report[i]["Myclass"]=classdet;
+                //     }
+                //     //console.log(facId);
+                // });
+
+               
                  }
                  }
             
          });
 
-         //console.log(noOfFaculty+" no of faculty");
-         //apiResult.report.totalFaculty = 12;
-         var apiResult={};
-         
-         apiResult.data=resultJson;
-         res.json(apiResult);
+      
        
          
      }

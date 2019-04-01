@@ -157,6 +157,25 @@ func CreateCategory(c *gin.Context) {
 	}
 
 }
+//delete module by id
+func(c *gin.Context) {
+	id := c.Query("id")
+	db := D.DB()
+	c.BindJSON(&b)
+	ID := Validation(c)
+	stmt, err := db.Prepare("delete from person where id= ?;")
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	res, err = stmt.Exec(id)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Successfully deleted Module : %s", id),
+	})
+}
+
 
 func AddVideoModule(c *gin.Context) {
 
