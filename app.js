@@ -6,8 +6,8 @@ const logger = require('morgan');  // logger middleware morgan is used to tell e
 // morgan then log something and let the req  continue, morgan call next function but it doesn't 
 // return res but tell next to continue there work, use it before we handle our req with our routes
 
-
-mongoose.connect('mongodb://localhost:27017/shoppingRestfulApi', {useNewUrlParser: true},()=>{
+const url = 'mongodb://localhost:27017/shoppingRestfulApi'
+mongoose.connect(url, {useNewUrlParser: true},()=>{
     console.log("database has been connected successfully");
 });
 
